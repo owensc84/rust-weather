@@ -1,7 +1,7 @@
 
 fn main() {
 	
-	let str = format!("abc123dddddddd");
+	let str = format!("abcdddd");
 	let c : Vec<char> = str.chars().collect();
 	println!("{:?}", c);
 }

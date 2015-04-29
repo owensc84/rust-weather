@@ -1,9 +1,11 @@
 [package]
-
-name = "hello_world"
+name = "weather"
 version = "0.0.1"
 authors = [ "Your name <you@example.com>" ]
 
 [[bin]]
+name = "weather"
 
-name = "hello_world"
+[dependencies]
+hyper = "*"
+rustc-serialize = "*"

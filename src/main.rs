@@ -45,16 +45,13 @@ fn determine_zip_code() -> Result<String, Error>  {
 	};
 	
 	match re.captures(response.as_str()) {
-	   Some(_) => (), 
+	   Some(cap) => {
+	   	  let mut zip_code = format!("{}", cap.at(0).unwrap());
+	   	  zip_code.remove(0); // remove the leading "
+	   	  return Ok(zip_code)
+	   }, 
 	   None => return Err(Error::RegexError(format!("regex found no match")))
 	}
-
-
-	let mut zip_code = format!("{}", re.captures(response.as_str()).unwrap().at(0).unwrap());
-	
-	zip_code.remove(0);	// remove the leading "
-	
-	Ok(zip_code)
 }
 
 /*fn url_builder(city : String) -> String {
@@ -64,6 +61,8 @@ fn determine_zip_code() -> Result<String, Error>  {
 
 fn main() {
 
+
+	println!("{}", http_get(format!("http://api.wunderground.com/api/3d58504465810da1/conditions/q/55124.json")).unwrap());
 	/*let mut client = Client::new();
 	
 	let mut res = client.get("http://api.wunderground.com/api/3d58504465810da1/features/settings/q/.json")
@@ -77,10 +76,10 @@ fn main() {
 		
 		println!("Response: {}", body); */
 	
-	match determine_zip_code() {
+	/*match determine_zip_code() {
 	   Ok(s) => println!("{}", s),
 	   Err(e) => println!("{:?}", e)
-	}
+	}*/
 }
 
 #[test]
@@ -91,10 +90,5 @@ fn test_get_zip() {
    };
    
    assert_eq!("55024", test_string);
-   /*assert!('5', test_string.pop());
-   assert!('5', test_string.pop());
-   assert!('0', test_string.pop());
-   assert!('2', test_string.pop());
-   assert!('4', test_string.pop());*/
 }
 

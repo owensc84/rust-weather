@@ -27,7 +27,7 @@ fn http_get(url : String) -> Result<String, Error> {
 	  	return Ok(body)
 	  },
 	  Err(e)=> return Err(Error::HTTPGetError(format!("{}", e))) 
-	};
+   };
 }
 
 
@@ -82,3 +82,19 @@ fn main() {
 	   Err(e) => println!("{:?}", e)
 	}
 }
+
+#[test]
+fn test_get_zip() {
+   let test_string = match determine_zip_code() {
+     Ok(s) => s,
+     Err(e) => format!("wrong")
+   };
+   
+   assert_eq!("55024", test_string);
+   /*assert!('5', test_string.pop());
+   assert!('5', test_string.pop());
+   assert!('0', test_string.pop());
+   assert!('2', test_string.pop());
+   assert!('4', test_string.pop());*/
+}
+

@@ -1,7 +1,12 @@
-[package]
+[project]
 name = "weather"
 version = "0.0.1"
 authors = [ "Your name <you@example.com>" ]
+
+[lib]
+name = "weather"
+path = "src/lib.rs"
+
 
 [[bin]]
 name = "weather"

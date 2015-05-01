@@ -1,10 +1,3 @@
-#![feature(plugin)]
-#![feature(convert)]
-//#![plugin(regex_macros)]
-
-extern crate hyper;
-extern crate regex;
-
 use regex::Regex;
 
 use std::io::Read;
@@ -18,7 +11,7 @@ use hyper::header::ConnectionOption;
 pub enum Error { RegexError(String), HTTPGetError(String) }
 
 
- pub fn http_get(url : String) -> Result<String, Error> {
+ fn http_get(url : String) -> Result<String, Error> {
    let mut client = Client::new();
 
    match client.get(&*url).header(Connection(vec![ConnectionOption::Close])).send() {
@@ -31,7 +24,7 @@ pub enum Error { RegexError(String), HTTPGetError(String) }
    };
 }
 
-fn get_weather_json(url: String) -> Result<String, Error> {
+pub fn get_weather_json(url: String) -> Result<String, Error> {
   let response = match http_get(url) {
     Ok(s) => return Ok(s),
     Err(e) => return Err(e)
@@ -60,11 +53,3 @@ pub fn determine_zip_code() -> Result<String, Error>  {
 	   None => return Err(Error::RegexError(format!("regex found no match")))
 	};
 }
-
-pub fn simple_print() {
-  println!("it worked!");
-}
-/*fn url_builder(city : String) -> String {
-	let wunder_key = format!("3d58504465810da1");
-
-} */

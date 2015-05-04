@@ -1,3 +1,3 @@
-pub use self::helper::determine_zip_code;
+pub use self::helper::get_current_conditions;
 
 pub mod helper;

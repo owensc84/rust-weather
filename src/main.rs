@@ -1,7 +1,12 @@
 extern crate weather;
 
-use weather::helper::determine_zip_code;
+use weather::helper::get_current_conditions;
 
 fn main() {
-	println!("{}", determine_zip_code().unwrap());
+	match get_current_conditions() {
+		Ok(z) => println!("The Weather for: {}\nTemperature: {}F", z.city, z.current_temp),
+		Err(e) => println!("{:?}",e)
+	};
+
+
 }

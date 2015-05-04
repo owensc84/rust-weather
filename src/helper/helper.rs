@@ -22,6 +22,7 @@ fn parse_weather_json(weather_json_str: String) -> Result<WeatherT, Error> {
   let mut city_string = String::new();
 
   // match temp_F
+  
   let re_temp_f = match Regex::new(r"temp_f\W\W\d+\W\d+") {
     Ok(r) => r,
     Err(e) => return Err(Error::RegexError(format!("{}", e)))

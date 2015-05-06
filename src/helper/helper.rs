@@ -3,8 +3,8 @@ use regex::Regex;
 use std::io::Read;
 
 use hyper::Client;
-use hyper::header::Connection;
-use hyper::header::ConnectionOption;
+//use hyper::header::Connection;
+//use hyper::header::ConnectionOption;
 
 
 #[derive(Debug)]
@@ -16,6 +16,7 @@ pub struct WeatherT {
   pub current_temp : String,
 }
 
+#[allow(unused)]
 fn parse_weather_json(weather_json_str: String) -> Result<WeatherT, Error> {
 
   let mut temp_string = String::new();

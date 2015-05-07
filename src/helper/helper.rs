@@ -1,4 +1,5 @@
-use regex::Regex;
+//use regex::Regex;
+use rustc_serialize::json::Json;
 
 use std::io::Read;
 
@@ -8,49 +9,56 @@ use hyper::Client;
 
 
 #[derive(Debug)]
-pub enum Error { RegexError(String), HTTPGetError(String) }
+pub enum Error { RegexError(String), HTTPGetError(String), JsonError(String) }
 
 #[derive(Debug)]
 pub struct WeatherT {
-  pub city : String,
-  pub current_temp : String,
+  pub city: String,
+  pub current_temp:  String,
+  pub current_conditions: String,
+  pub wind_string: String,
 }
 
 #[allow(unused)]
-fn parse_weather_json(weather_json_str: String) -> Result<WeatherT, Error> {
+fn parse_weather_json(weather_json_str: &str) -> Result<WeatherT, Error> {
 
   let mut temp_string = String::new();
+  let mut wind_string = String::new();
   let mut city_string = String::new();
+  let mut current_string = String::new();
 
-  // match temp_F
+  let weather_json = match Json::from_str(&weather_json_str) {
+    Ok(j) => j,
+    Err(e) => return  Err(Error::JsonError(format!("{}", e)))
+  };
+
+  match weather_json.search("temp_f") {
+    Some(temp) => temp_string = format!("{}", temp),
+    None => return Err(Error::JsonError(format!("couldn't find temp_f key")))
+  };
+
+  match weather_json.search("full") {
+    Some(city) => city_string = format!("{}", city),
+    None => return Err(Error::JsonError(format!("couldn't find full key")))
+  };
+ 
+   match weather_json.search("wind_string") {
+    Some(wind) => wind_string = format!("{}", wind),
+    None => return Err(Error::JsonError(format!("couldn't find wind_string key")))
+  };
   
-  let re_temp_f = match Regex::new(r"temp_f\W\W\d+\W\d+") {
-    Ok(r) => r,
-    Err(e) => return Err(Error::RegexError(format!("{}", e)))
+   match weather_json.search("weather") {
+    Some(current) => current_string = format!("{}", current),
+    None => return Err(Error::JsonError(format!("couldn't find weather key")))
   };
 
-  let re_city = match Regex::new(r"city\W\W\W\w+") {
-    Ok(r) => r,
-    Err(e) => return Err(Error::RegexError(format!("{}", e)))
-  };
+  let weather_struct = WeatherT{city: city_string, 
+                                current_temp: temp_string,
+                                wind_string: wind_string,
+                                current_conditions: current_string,
 
-  match re_temp_f.captures(weather_json_str.as_str()) {
-    Some(cap) => {
-      let v: Vec<&str> = cap.at(0).unwrap().split("\":").collect();
-      temp_string = format!("{}", v[1]);
-    },
-    None => return Err(Error::RegexError(format!("temp_f: regex found no match")))
-  };
 
-  match re_city.captures(weather_json_str.as_str()) {
-    Some(cap) => {
-      let v: Vec<&str> = cap.at(0).unwrap().split("\":\"").collect();
-      city_string = format!("{}", v[1]);
-    }
-    None => return Err(Error::RegexError(format!("city: regex found no match")))
-  }
-
-  let weather_struct = WeatherT{city: city_string, current_temp: temp_string};
+                                                  };
 
   Ok(weather_struct)
 
@@ -70,7 +78,7 @@ pub fn get_current_conditions() -> Result<WeatherT, Error> {
     Err(e) => return Err(e)
   };
 
-  match parse_weather_json(weat_json) {
+  match parse_weather_json(weat_json.as_str()) {
     Ok(weat_struct) => return Ok(weat_struct),
     Err(e) => return Err(e)
   };
@@ -100,19 +108,15 @@ fn determine_zip_code() -> Result<String, Error>  {
 	  Err(e) => return Err(e)
 	};
 
-	let re = match Regex::new(r"\W\d{5}") {
-	   Ok(r) => r,
-	   Err(e) => return Err(Error::RegexError(format!("{}", e)))
-	};
+  let zip_json = match Json::from_str(&response) {
+    Ok(j) => j,
+    Err(e) => return  Err(Error::JsonError(format!("{}", e)))
+  };
 
-	match re.captures(response.as_str()) {
-	   Some(cap) => {
-	   	  let mut zip_code = format!("{}", cap.at(0).unwrap());
-	   	  zip_code.remove(0); // remove the leading "
-	   	  return Ok(zip_code)
-	   },
-	   None => return Err(Error::RegexError(format!("regex found no match")))
-	};
+  match zip_json.search("zip") {
+    Some(zip) => return Ok(format!("{}", zip)),
+    None => return Err(Error::JsonError(format!("couldn't find zip key")))
+  };
 }
 
 /*

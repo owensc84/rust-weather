@@ -123,7 +123,7 @@ impl WeatherStruct {
 			Ok(())
 		}
 
-	}
+}
 
 
 

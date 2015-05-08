@@ -1,4 +1,4 @@
-extern crate weather;
+/*extern crate weather;
 
 use weather::helper::determine_zip_code;
 
@@ -9,4 +9,4 @@ fn test_get_zip() {
      Err(e) => format!("wrong")
    };
    assert_eq!("55024", test_string);
-}
+}*/

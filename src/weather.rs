@@ -78,8 +78,8 @@ impl WeatherStruct {
 		
 		self.zip = match zip_json_obj.search("zip") {
 			Some(z) => Some (
-					       format!("{}", z.as_string().ok_or("Zip object is not a string").unwrap())
-					   ),
+				format!("{}", z.as_string().ok_or("Zip object is not a string").unwrap())
+			),
 			None => return Err(format!("Couldnt find zip key"))
 		};
 		
